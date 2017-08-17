@@ -1,0 +1,18 @@
+#!/bin/bash
+OUT=0
+git diff --cached --name-status |
+    {
+        while read st file; do
+            # skip deleted files
+            if [ "$st" == 'D' ]; then continue; fi
+            # do a check only on the python files
+            if [[ $file =~ \.py$ ]]; then
+                flake=$(flake8 $file)
+                if [ -n "$flake" ]; then
+                    OUT=1
+                    echo $flake
+                fi
+            fi
+        done
+        exit $OUT
+    }
